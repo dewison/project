@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlueMarket — Магазин товарів</title>
+  <style>
+    :root {
+      --bg-color: #f4f4f9;
+      --text-color: #333333;
+      --header-bg: #1e88e5;
+      --header-text: #ffffff;
+      --card-bg: #ffffff;
+      --border-color: #e0e0e0;
+      --aside-bg: #ffffff;
+      --accent-color: #ff4081;
+      --button-bg: #1e88e5;
+      --button-text: #ffffff;
+      --logo-bg: #0d47a1; /* Насичений синій для логотипу */
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --header-bg: #1f1f1f;
+      --header-text: #ffffff;
+      --card-bg: #1e1e1e;
+      --border-color: #333333;
+      --aside-bg: #1e1e1e;
+      --accent-color: #ff4081;
+      --button-bg: #bb86fc;
+      --button-text: #000000;
+      --logo-bg: #2979ff; /* Світліший синій для темної теми */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    /* Header Styles */
+    header {
+      background-color: var(--header-bg);
+      color: var(--header-text);
+      padding: 15px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    /* Стилі для синього логотипу */
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      background-color: var(--logo-bg);
+      color: #ffffff;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 20px;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .logo-text {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--header-text);
+      letter-spacing: 0.5px;
+    }
+
+    .logo-text span {
+      color: #90caf9; /* Акцентний відтінок синього в назві */
+    }
+
+    .search-bar {
+      display: flex;
+      flex: 1;
+      max-width: 500px;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px 0 0 4px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .search-bar button {
+      padding: 10px 20px;
+      border: none;
+      background-color: var(--accent-color);
+      color: white;
+      font-weight: bold;
+      border-radius: 0 4px 4px 0;
+      cursor: pointer;
+    }
+
+    .header-settings {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .theme-toggle {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Main Container Layout */
+    .main-container {
+      display: flex;
+      flex: 1;
+      padding: 20px;
+      gap: 20px;
+    }
+
+    /* Left Sidebar: Filters */
+    aside.left {
+      width: 250px;
+      background-color: var(--aside-bg);
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-self: flex-start;
+    }
+
+    aside.left h3 {
+      font-size: 18px;
+      border-bottom: 2px solid var(--accent-color);
+      padding-bottom: 8px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .filter-group label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .filter-group select,
+    .filter-group input[type="range"] {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    /* Main Content: Products Grid */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      align-content: start;
+    }
+
+    .product-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: var(--accent-color);
+      color: white;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: bold;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .product-image {
+      width: 100%;
+      height: 180px;
+      background-color: #ccc;
+      object-fit: cover;
+    }
+
+    .product-info {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .product-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .product-price {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--accent-color);
+    }
+
+    .old-price {
+      font-size: 14px;
+      text-decoration: line-through;
+      color: #888;
+      margin-left: 8px;
+    }
+
+    .btn-buy {
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    /* Right Sidebar: Banner */
+    aside.right {
+      width: 220px;
+      background: linear-gradient(135deg, #1e88e5, #0d47a1);
+      color: white;
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 15px;
+      align-self: flex-start;
+      min-height: 400px;
+    }
+
+    aside.right h3 {
+      font-size: 22px;
+      text-transform: uppercase;
+    }
+
+    aside.right p {
+      font-size: 14px;
+    }
+
+    aside.right .banner-btn {
+      background-color: white;
+      color: #0d47a1;
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    /* Footer */
+    footer {
+      background-color: var(--header-bg);
+      color: var(--header-text);
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-top: auto;
+    }
+
+    /* Адаптивність для мобільних пристроїв */
+    @media (max-width: 900px) {
+      .main-container {
+        flex-direction: column;
+      }
+
+      aside.left, aside.right {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Хедер із синім логотипом, пошуком та перемикачем теми -->
+  <header>
+    <a href="#" class="logo-container">
+      <div class="logo-icon">BM</div>
+      <div class="logo-text">Blue<span>Market</span></div>
+    </a>
+
+    <div class="search-bar">
+      <input type="text" placeholder="Пошук товарів або речей...">
+      <button>Шукати</button>
+    </div>
+
+    <div class="header-settings">
+      <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">
+        🌙 Темна тема
+      </button>
+    </div>
+  </header>
+
+  <div class="main-container">
+    
+    <!-- Лівий блок: Фільтри товарів -->
+    <aside class="left">
+      <h3>Фільтри</h3>
+
+      <div class="filter-group">
+        <label>Знижка:</label>
+        <select>
+          <option value="all">Всі товари</option>
+          <option value="discount">Зі знижкою</option>
+          <option value="full">Без знижки</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Макс. ціна: <span id="priceVal">5000</span> грн</label>
+        <input type="range" min="100" max="10000" step="100" value="5000" id="priceRange" oninput="document.getElementById('priceVal').innerText = this.value">
+      </div>
+
+      <div class="filter-group">
+        <label>Формат / Категорія:</label>
+        <select>
+          <option value="all">Усі категорії</option>
+          <option value="clothes">Одяг</option>
+          <option value="shoes">Взуття</option>
+          <option value="electronics">Електроніка</option>
+          <option value="accessories">Аксесуари</option>
+        </select>
+      </div>
+    </aside>
+
+    <!-- Основний контент: Картки товарів -->
+    <main>
+      <!-- Картка 1 -->
+      <div class="product-card">
+        <span class="badge">Знижка</span>
+        <img src="https://via.placeholder.com/220x180?text=Кросівки" alt="Товар" class="product-image">
+        <div class="product-info">
+          <div class="product-title">Спортивні кросівки</div>
+          <div class="product-price">1 499 грн <span class="old-price">2 100 грн</span></div>
+          <button class="btn-buy">Купити</button>
+        </div>
+      </div>
+
+      <!-- Картка 2 -->
+      <div class="product-card">
+        <img src="https://via.placeholder.com/220x180?text=Худі" alt="Товар" class="product-image">
+        <div class="product-info">
+          <div class="product-title">Оверсайз Худі</div>
+          <div class="product-price">990 грн</div>
+          <button class="btn-buy">Купити</button>
+        </div>
+      </div>
+
+      <!-- Картка 3 -->
+      <div class="product-card">
+        <span class="badge">ТОП</span>
+        <img src="https://via.placeholder.com/220x180?text=Годинник" alt="Товар" class="product-image">
+        <div class="product-info">
+          <div class="product-title">Смарт-годинник v2</div>
+          <div class="product-price">3 200 грн</div>
+          <button class="btn-buy">Купити</button>
+        </div>
+      </div>
+
+      <!-- Картка 4 -->
+      <div class="product-card">
+        <span class="badge">Знижка</span>
+        <img src="https://via.placeholder.com/220x180?text=Джинси" alt="Товар" class="product-image">
+        <div class="product-info">
+          <div class="product-title">Джинси Regular Fit</div>
+          <div class="product-price">1 100 грн <span class="old-price">1 500 грн</span></div>
+          <button class="btn-buy">Купити</button>
+        </div>
+      </div>
+
+      <!-- Картка 5 -->
+      <div class="product-card">
+        <img src="https://via.placeholder.com/220x180?text=Рюкзак" alt="Товар" class="product-image">
+        <div class="product-info">
+          <div class="product-title">Міський рюкзак</div>
+          <div class="product-price">850 грн</div>
+          <button class="btn-buy">Купити</button>
+        </div>
+      </div>
+
+      <!-- Картка 6 -->
+      <div class="product-card">
+        <span class="badge">NEW</span>
+        <img src="https://via.placeholder.com/220x180?text=Навушники" alt="Товар" class="product-image">
+        <div class="product-info">
+          <div class="product-title">Бездротові навушники</div>
+          <div class="product-price">2 400 грн</div>
+          <button class="btn-buy">Купити</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Правий блок: Рекламний банер -->
+    <aside class="right">
+      <h3>Blue Sale!</h3>
+      <p>Знижки до -50% на всю нову колекцію одягу та гаджетів.</p>
+      <a href="#" class="banner-btn">Перейти</a>
+    </aside>
+
+  </div>
+
+  <footer>
+    &copy; 2026 BlueMarket. Усі права захищено.
+  </footer>
+
+  <script>
+    // Скрипт для зміни теми (Світла / Темна)
+    function toggleTheme() {
+      const currentTheme = document.body.getAttribute('data-theme');
+      const themeBtn = document.getElementById('themeBtn');
+
+      if (currentTheme === 'dark') {
+        document.body.removeAttribute('data-theme');
+        themeBtn.innerHTML = '🌙 Темна тема';
+      } else {
+        document.body.setAttribute('data-theme', 'dark');
+        themeBtn.innerHTML = '☀️ Світла тема';
+      }
+    }
+  </script>
+
+</body>
+</html>
