@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="uk" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блу маркет — Інтернет-магазин</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                            950: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col transition-colors duration-300">
+
+    <header class="sticky top-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            <!-- Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="resetFilters()">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-blue-800 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-blue-500/20">
+                    BM
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">Блу маркет</span>
+                    <span class="text-xs text-blue-600 dark:text-blue-400 font-medium">Інтернет-магазин</span>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="flex-1 max-w-xl mx-4">
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                        <i class="fa-solid fa-search"></i>
+                    </span>
+                    <input type="text" id="searchInput" placeholder="Пошук товарів за назвою чи характеристиками..." 
+                        class="w-full pl-11 pr-4 py-2.5 bg-gray-100 dark:bg-gray-800 border border-transparent dark:border-gray-700 rounded-xl focus:bg-white dark:focus:bg-gray-900 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none transition-all text-sm">
+                </div>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="flex items-center gap-3">
+                <!-- Theme Toggle Button -->
+                <button id="themeToggle" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors" title="Змінити тему">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:inline"></i>
+                </button>
+
+                <!-- Cart Button -->
+                <button onclick="toggleCartModal()" class="relative p-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/40 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 transition-colors flex items-center gap-2 px-4">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="text-sm font-semibold hidden sm:inline">Кошик</span>
+                    <span id="cartCount" class="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold shadow-sm">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <aside class="lg:col-span-1 space-y-6">
+                <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-6">
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800">
+                        <h2 class="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-filter text-blue-500"></i> Фільтри
+                        </h2>
+                        <button onclick="resetFilters()" class="text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium">Скинути</button>
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="space-y-3">
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Категорія</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="radio" name="category" value="all" checked class="text-blue-600 focus:ring-blue-500">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Всі категорії</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="radio" name="category" value="electronics" class="text-blue-600 focus:ring-blue-500">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Електроніка / Гаджети</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="radio" name="category" value="clothing" class="text-blue-600 focus:ring-blue-500">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Одяг</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Discount Checkboxes -->
+                    <div class="space-y-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Статус знижки</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" id="discountOnly" class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Лише зі знижкою</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" id="noDiscount" class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Без знижки</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="space-y-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Ціна (грн)</label>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="priceMin" placeholder="Від" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                            <span class="text-gray-400">—</span>
+                            <input type="number" id="priceMax" placeholder="До" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <!-- Apply Button -->
+                    <button onclick="applyFilters()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/25 transition-all text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-check"></i> Застосувати фільтри
+                    </button>
+                </div>
+            </aside>
+
+            <section class="lg:col-span-2 space-y-6">
+                <!-- Sorting & Counter header -->
+                <div class="flex items-center justify-between bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
+                    <p id="productsCount" class="text-sm text-gray-500 dark:text-gray-400 font-medium">Знайдено товарів: <span class="text-gray-900 dark:text-white font-bold">0</span></p>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-500 dark:text-gray-400 hidden sm:inline">Сортування:</span>
+                        <select id="sortSelect" onchange="applyFilters()" class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-1.5 text-sm font-medium focus:outline-none focus:border-blue-500">
+                            <option value="default">За замовчуванням</option>
+                            <option value="price-asc">Від дешевих до дорогих</option>
+                            <option value="price-desc">Від дорогих до дешевих</option>
+                            <option value="rating">За рейтингом</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Product Cards Grid -->
+                <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <!-- Products will be dynamically inserted here via JS -->
+                </div>
+            </section>
+
+            <aside class="lg:col-span-1 space-y-6">
+                <!-- Promo Banner 1 -->
+                <div class="bg-gradient-to-br from-blue-600 to-indigo-900 text-white p-6 rounded-2xl shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[320px]">
+                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+                    <div class="space-y-3 z-10">
+                        <span class="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider inline-block">Акція тижня</span>
+                        <h3 class="text-2xl font-black leading-tight">Знижки до -50% на гаджети!</h3>
+                        <p class="text-blue-100 text-sm">Оновіть свої девайси за найкращими цінами цієї весни. Кількість акційних товарів обмежена.</p>
+                    </div>
+                    <div class="pt-6 z-10">
+                        <button onclick="scrollToProducts()" class="w-full py-3 bg-white text-blue-900 font-bold rounded-xl shadow-md hover:bg-blue-50 transition-colors text-sm flex items-center justify-center gap-2">
+                            Купити зараз <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Promo Banner 2 -->
+                <div class="bg-gradient-to-br from-slate-900 to-blue-950 text-white p-6 rounded-2xl shadow-xl relative overflow-hidden flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+                            <i class="fa-solid fa-truck-fast text-lg"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">Безкоштовна доставка</h3>
+                        <p class="text-gray-300 text-sm">Отримуйте замовлення безкоштовно при покупці на суму від 1000 грн у будь-яке відділення по країні.</p>
+                    </div>
+                    <div class="pt-4">
+                        <span class="text-xs text-blue-400 font-semibold uppercase tracking-wider">Діє постійно</span>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <div id="cartModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-900 w-full max-w-lg rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-cart-shopping text-blue-500"></i> Ваш кошик
+                </h3>
+                <button onclick="toggleCartModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div id="cartItemsList" class="p-5 flex-1 overflow-y-auto space-y-4 divide-y divide-gray-100 dark:divide-gray-800">
+                <!-- Cart items will be rendered here -->
+            </div>
+
+            <div class="p-5 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 space-y-4">
+                <div class="flex items-center justify-between font-bold text-lg">
+                    <span class="text-gray-700 dark:text-gray-300">Загалом:</span>
+                    <span id="cartTotalPrice" class="text-blue-600 dark:text-blue-400">0 грн</span>
+                </div>
+                <button onclick="checkout()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/25 transition-all text-sm">
+                    Оформити замовлення
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 font-medium text-sm">
+        <i class="fa-solid fa-circle-check text-blue-400 text-base"></i>
+        <span id="toastMessage">Товар додано до кошика!</span>
+    </div>
+
+    <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500 dark:text-gray-400">
+            <p>©2026 BlueMarket. Усі права захищено.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Product Database
+        const products = [
+            {
+                id: 1,
+                name: "Смарт-годинник X-Watch Pro",
+                category: "electronics",
+                price: 2499,
+                oldPrice: 3299,
+                discount: 24,
+                rating: 5,
+                image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80",
+                description: "Сучасний гаджет з пульсометром, GPS, захистом від вологи та дисплеєм AMOLED. Корпус виготовлено з авіаційного алюмінію."
+            },
+            {
+                id: 2,
+                name: "Бездротові навушники SoundPod",
+                category: "electronics",
+                price: 1799,
+                oldPrice: 2299,
+                discount: 21,
+                rating: 4,
+                image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80",
+                description: "Активне шумозаглушення, глибокий бас та до 30 годин автономної роботи з кейсом. Матеріал: матовий пластик софт-тач."
+            },
+            {
+                id: 3,
+                name: "Стильна чоловіча куртка Urban",
+                category: "clothing",
+                price: 2899,
+                oldPrice: 3599,
+                discount: 19,
+                rating: 5,
+                image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&auto=format&fit=crop&q=80",
+                description: "Зручна демісезонна куртка вітрозахисного типу. Виготовлена з високоякісного нейлону та утеплювача нового покоління."
+            },
+            {
+                id: 4,
+                name: "Фітнес-браслет FitActive V2",
+                category: "electronics",
+                price: 899,
+                oldPrice: 899,
+                discount: 0,
+                rating: 4,
+                image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=600&auto=format&fit=crop&q=80",
+                description: "Контроль сну, крокомір та сповіщення з телефону. Силіконовий гіпоалергенний ремінець та стійке скло."
+            },
+            {
+                id: 5,
+                name: "Бавовняне худі Classic Blue",
+                category: "clothing",
+                price: 1399,
+                oldPrice: 1999,
+                discount: 30,
+                rating: 5,
+                image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&auto=format&fit=crop&q=80",
+                description: "М'яке та тепле худі з капюшоном. 100% натуральна бавовна преміум якості, приємна до тіла."
+            },
+            {
+                id: 6,
+                name: "Портативна колонка BassBoom",
+                category: "electronics",
+                price: 1599,
+                oldPrice: 1999,
+                discount: 20,
+                rating: 4,
+                image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600&auto=format&fit=crop&q=80",
+                description: "Потужний стереозвук та водонепроникність IPX7. Тканинний захисний чохол та прогумовані елементи."
+            }
+        ];
+
+        let cart = [];
+
+        // DOM Elements
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+        const productGrid = document.getElementById('productGrid');
+        const cartCount = document.getElementById('cartCount');
+        const cartModal = document.getElementById('cartModal');
+        const cartItemsList = document.getElementById('cartItemsList');
+        const cartTotalPrice = document.getElementById('cartTotalPrice');
+        const productsCount = document.getElementById('productsCount').querySelector('span');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // Theme Initialization & Handler
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            htmlElement.classList.add('dark');
+        } else {
+            htmlElement.classList.remove('dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (htmlElement.classList.contains('dark')) {
+                htmlElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                htmlElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // Render Products
+        function renderProducts(items) {
+            productGrid.innerHTML = '';
+            productsCount.textContent = items.length;
+
+            if (items.length === 0) {
+                productGrid.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-gray-400">
+                        <i class="fa-solid fa-box-open text-4xl mb-3"></i>
+                        <p class="text-base font-medium">Товарів за вашим запитом не знайдено</p>
+                    </div>
+                `;
+                return;
+            }
+
+            items.forEach(product => {
+                const stars = Array.from({ length: 5 }, (_, i) => 
+                    `<i class="fa-solid fa-star ${i < product.rating ? 'text-amber-400' : 'text-gray-300 dark:text-gray-700'} text-xs"></i>`
+                ).join('');
+
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden";
+                
+                card.innerHTML = `
+                    <div class="relative aspect-[4/3] bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/3b82f6/ffffff?text=BlueMarket'">
+                        ${product.discount > 0 ? `<span class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg shadow-sm">-${product.discount}%</span>` : ''}
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-1">${stars}</div>
+                            <h3 class="font-bold text-gray-900 dark:text-white leading-tight">${product.name}</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">${product.description}</p>
+                        </div>
+                        <div class="space-y-3 pt-2 border-t border-gray-100 dark:border-gray-800">
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-lg font-black text-blue-600 dark:text-blue-400">${product.price} грн</span>
+                                ${product.oldPrice > product.price ? `<span class="text-xs text-gray-400 line-through">${product.oldPrice} грн</span>` : ''}
+                            </div>
+                            <button onclick="addToCart(${product.id})" class="w-full py-2.5 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-600 hover:text-white text-blue-600 dark:text-blue-400 font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 group">
+                                <i class="fa-solid fa-cart-plus group-hover:text-white"></i> У кошик
+                            </button>
+                        </div>
+                    </div>
+                `;
+                productGrid.appendChild(card);
+            });
+        }
+
+        // Filtering & Sorting Logic
+        function applyFilters() {
+            const category = document.querySelector('input[name="category"]:checked').value;
+            const discountOnly = document.getElementById('discountOnly').checked;
+            const noDiscount = document.getElementById('noDiscount').checked;
+            const priceMin = parseFloat(document.getElementById('priceMin').value) || 0;
+            const priceMax = parseFloat(document.getElementById('priceMax').value) || Infinity;
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+            const sortBy = document.getElementById('sortSelect').value;
+
+            let filtered = products.filter(product => {
+                if (category !== 'all' && product.category !== category) return false;
+                if (discountOnly && product.discount === 0) return false;
+                if (noDiscount && product.discount > 0) return false;
+                if (product.price < priceMin || product.price > priceMax) return false;
+                if (searchQuery && !product.name.toLowerCase().includes(searchQuery) && !product.description.toLowerCase().includes(searchQuery)) return false;
+                return true;
+            });
+
+            if (sortBy === 'price-asc') {
+                filtered.sort((a, b) => a.price - b.price);
+            } else if (sortBy === 'price-desc') {
+                filtered.sort((a, b) => b.price - a.price);
+            } else if (sortBy === 'rating') {
+                filtered.sort((a, b) => b.rating - a.rating);
+            }
+
+            renderProducts(filtered);
+        }
+
+        // Search live listener
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+        function resetFilters() {
+            document.querySelector('input[name="category"][value="all"]').checked = true;
+            document.getElementById('discountOnly').checked = false;
+            document.getElementById('noDiscount').checked = false;
+            document.getElementById('priceMin').value = '';
+            document.getElementById('priceMax').value = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('sortSelect').value = 'default';
+            renderProducts(products);
+        }
+
+        // Cart Management
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existing = cart.find(item => item.id === productId);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            updateCartUI();
+            showToast(`Товар "${product.name}" додано до кошика!`);
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalCount;
+
+            cartItemsList.innerHTML = '';
+            if (cart.length === 0) {
+                cartItemsList.innerHTML = `<p class="text-center text-gray-400 py-6 text-sm">Ваш кошик порожній</p>`;
+                cartTotalPrice.textContent = '0 грн';
+                return;
+            }
+
+            let totalPrice = 0;
+            cart.forEach(item => {
+                totalPrice += item.price * item.quantity;
+                const cartItemEl = document.createElement('div');
+                cartItemEl.className = "flex items-center justify-between py-3";
+                cartItemEl.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <img src="${item.image}" class="w-12 h-12 rounded-xl object-cover" onerror="this.src='https://placehold.co/100x100/3b82f6/ffffff?text=BM'">
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-900 dark:text-white">${item.name}</h4>
+                            <p class="text-xs text-gray-500">${item.price} грн × ${item.quantity}</p>
+                        </div>
+                    </div>
+                    <button onclick="removeFromCart(${item.id})" class="text-red-500 hover:text-red-700 p-2 text-sm">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                `;
+                cartItemsList.appendChild(cartItemEl);
+            });
+
+            cartTotalPrice.textContent = `${totalPrice} грн`;
+        }
+
+        function toggleCartModal() {
+            cartModal.classList.toggle('hidden');
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                showToast("Кошик порожній!");
+                return;
+            }
+            showToast("Замовлення успішно оформлено! Дякуємо за покупку.");
+            cart = [];
+            updateCartUI();
+            toggleCartModal();
+        }
+
+        // Toast Notification helper
+        function showToast(message) {
+            toastMessage.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function scrollToProducts() {
+            window.scrollTo({ top: 400, behavior: 'smooth' });
+        }
+
+        // Initial Render on Load
+        window.onload = function() {
+            renderProducts(products);
+        };
+    </script>
+</body>
+</html>
