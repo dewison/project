@@ -173,6 +173,7 @@
             display: flex;
             flex-direction: column;
             gap: 30px;
+            min-width: 0; /* Для коректної роботи флекс-слайдерів */
         }
 
         .hero-banner {
@@ -191,6 +192,11 @@
             margin-bottom: 10px;
         }
 
+        /* Стилі секцій зі слайдером */
+        .products-section {
+            position: relative;
+        }
+
         .products-section h2 {
             color: var(--primary-dark);
             margin-bottom: 15px;
@@ -199,12 +205,62 @@
             padding-left: 10px;
         }
 
+        .slider-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .slider-container {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 10px 5px;
+            scrollbar-width: none; /* Приховуємо скроллбар для Firefox */
+        }
+
+        .slider-container::-webkit-scrollbar {
+            display: none; /* Приховуємо скроллбар для Chrome/Safari */
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+            cursor: pointer;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .slider-btn:hover {
+            background-color: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .slider-btn.prev { left: -15px; }
+        .slider-btn.next { right: -15px; }
+
+        /* Сітка звичайних товарів */
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 20px;
         }
 
+        /* Картка товару */
         .product-card {
             background-color: var(--white);
             border: 1px solid var(--border-color);
@@ -215,6 +271,12 @@
             flex-direction: column;
             justify-content: space-between;
             transition: transform 0.2s, box-shadow 0.2s;
+            flex: 0 0 230px; /* Фіксована ширина для слайдера */
+            box-sizing: border-box;
+        }
+
+        .products-grid .product-card {
+            flex: unset; /* Скидання фіксованої ширини в сітці */
         }
 
         .product-card:hover {
@@ -237,7 +299,7 @@
 
         .product-image {
             width: 100%;
-            height: 180px;
+            height: 170px;
             object-fit: cover;
             margin-bottom: 12px;
             border-radius: 6px;
@@ -277,6 +339,7 @@
             align-items: baseline;
             gap: 8px;
             margin-bottom: 12px;
+            min-height: 28px;
         }
 
         .old-price {
@@ -307,7 +370,7 @@
             background-color: var(--primary-dark);
         }
 
-        /* ОНОВЛЕНЕ СТИЛЬНЕ МОДАЛЬНЕ ВІКНО КОШИКА */
+        /* МОДАЛЬНЕ ВІКНО КОШИКА */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -577,6 +640,7 @@
                 border-right: none;
                 border-bottom: 1px solid var(--border-color);
             }
+            .slider-btn { display: none; } /* На мобільних зручно гортати пальцем */
         }
     </style>
 </head>
@@ -629,96 +693,173 @@
                 </div>
             </section>
 
-            <!-- Секція 1: Sales -->
+            <!-- Секція 1: Акційні пропозиції (Слайдер зі знижками) -->
             <section class="products-section">
                 <h2>Акційні пропозиції (Sales)</h2>
-                <div class="products-grid">
-                    
-                    <div class="product-card" data-id="1" data-sku="ART-001" data-price="1500">
-                        <span class="discount-badge">-25%</span>
-                        <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&auto=format&fit=crop&q=60" alt="Смарт-годинник" class="product-image">
-                        <div class="product-title" title="Смарт-годинник Ultra Fit Pro Max Sport Edition">Смарт-годинник Ultra Fit Pro Max Sport Edition</div>
-                        <div class="product-description"><strong>Характеристики:</strong> AMOLED 1.4", GPS, IP68.<br><strong>Матеріал:</strong> Алюміній, силікон.</div>
-                        <div class="product-rating">★★★★★ <span>(4.9)</span></div>
-                        <div class="product-price-block"><span class="old-price">₴2 000</span><span class="new-price">₴1 500</span></div>
-                        <button class="btn-add-to-cart">У кошик</button>
-                    </div>
+                <div class="slider-wrapper">
+                    <button class="slider-btn prev" onclick="scrollSlider('salesSlider', -300)">&lt;</button>
+                    <div class="slider-container" id="salesSlider">
+                        
+                        <div class="product-card" data-id="1" data-sku="ART-001" data-price="1500">
+                            <span class="discount-badge">-25%</span>
+                            <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&auto=format&fit=crop&q=60" alt="Смарт-годинник" class="product-image">
+                            <div class="product-title" title="Смарт-годинник Ultra Fit Pro Max">Смарт-годинник Ultra Fit Pro Max</div>
+                            <div class="product-description"><strong>Характеристики:</strong> AMOLED 1.4", GPS, IP68.<br><strong>Матеріал:</strong> Алюміній, силікон.</div>
+                            <div class="product-rating">★★★★★ <span>(4.9)</span></div>
+                            <div class="product-price-block"><span class="old-price">₴2 000</span><span class="new-price">₴1 500</span></div>
+                            <button class="btn-add-to-cart">У кошик</button>
+                        </div>
 
-                    <div class="product-card" data-id="2" data-sku="ART-002" data-price="1190">
-                        <span class="discount-badge">-15%</span>
-                        <img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=400&auto=format&fit=crop&q=60" alt="Худі" class="product-image">
-                        <div class="product-title" title="Зимове худі Oversize Heavy Cotton Blue Edition">Зимове худі Oversize Heavy Cotton Blue Edition</div>
-                        <div class="product-description"><strong>Характеристики:</strong> Вільний крій, капюшон.<br><strong>Матеріал:</strong> 100% бавовна (фліс).</div>
-                        <div class="product-rating">★★★★☆ <span>(4.5)</span></div>
-                        <div class="product-price-block"><span class="old-price">₴1 400</span><span class="new-price">₴1 190</span></div>
-                        <button class="btn-add-to-cart">У кошик</button>
-                    </div>
+                        <div class="product-card" data-id="2" data-sku="ART-002" data-price="1190">
+                            <span class="discount-badge">-15%</span>
+                            <img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=400&auto=format&fit=crop&q=60" alt="Худі" class="product-image">
+                            <div class="product-title" title="Зимове худі Oversize Heavy Cotton">Зимове худі Oversize Heavy Cotton</div>
+                            <div class="product-description"><strong>Характеристики:</strong> Вільний крій, капюшон.<br><strong>Матеріал:</strong> 100% бавовна (фліс).</div>
+                            <div class="product-rating">★★★★☆ <span>(4.5)</span></div>
+                            <div class="product-price-block"><span class="old-price">₴1 400</span><span class="new-price">₴1 190</span></div>
+                            <button class="btn-add-to-cart">У кошик</button>
+                        </div>
 
-                    <div class="product-card" data-id="3" data-sku="ART-003" data-price="2450">
-                        <span class="discount-badge">-30%</span>
-                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&auto=format&fit=crop&q=60" alt="Навушники" class="product-image">
-                        <div class="product-title" title="Бездротові навушники Noise Cancelling Pro">Бездротові навушники Noise Cancelling Pro</div>
-                        <div class="product-description"><strong>Характеристики:</strong> ANC, 30 год роботи.<br><strong>Матеріал:</strong> Пластик, екошкіра.</div>
-                        <div class="product-rating">★★★★★ <span>(5.0)</span></div>
-                        <div class="product-price-block"><span class="old-price">₴3 500</span><span class="new-price">₴2 450</span></div>
-                        <button class="btn-add-to-cart">У кошик</button>
-                    </div>
+                        <div class="product-card" data-id="3" data-sku="ART-003" data-price="2450">
+                            <span class="discount-badge">-30%</span>
+                            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&auto=format&fit=crop&q=60" alt="Навушники" class="product-image">
+                            <div class="product-title" title="Бездротові навушники Noise Cancelling">Бездротові навушники Noise Cancelling</div>
+                            <div class="product-description"><strong>Характеристики:</strong> ANC, 30 год роботи.<br><strong>Матеріал:</strong> Пластик, екошкіра.</div>
+                            <div class="product-rating">★★★★★ <span>(5.0)</span></div>
+                            <div class="product-price-block"><span class="old-price">₴3 500</span><span class="new-price">₴2 450</span></div>
+                            <button class="btn-add-to-cart">У кошик</button>
+                        </div>
 
-                    <div class="product-card" data-id="4" data-sku="ART-004" data-price="640">
-                        <span class="discount-badge">-20%</span>
-                        <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400&auto=format&fit=crop&q=60" alt="Футболка" class="product-image">
-                        <div class="product-title" title="Спортивна футболка Dry-Fit Running Blue">Спортивна футболка Dry-Fit Running Blue</div>
-                        <div class="product-description"><strong>Характеристики:</strong> Влаговідвідна, дихаюча.<br><strong>Матеріал:</strong> Поліестер, еластан.</div>
-                        <div class="product-rating">★★★★☆ <span>(4.2)</span></div>
-                        <div class="product-price-block"><span class="old-price">₴800</span><span class="new-price">₴640</span></div>
-                        <button class="btn-add-to-cart">У кошик</button>
-                    </div>
+                        <div class="product-card" data-id="4" data-sku="ART-004" data-price="640">
+                            <span class="discount-badge">-20%</span>
+                            <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400&auto=format&fit=crop&q=60" alt="Футболка" class="product-image">
+                            <div class="product-title" title="Спортивна футболка Dry-Fit Running">Спортивна футболка Dry-Fit Running</div>
+                            <div class="product-description"><strong>Характеристики:</strong> Влаговідвідна.<br><strong>Матеріал:</strong> Поліестер, еластан.</div>
+                            <div class="product-rating">★★★★☆ <span>(4.2)</span></div>
+                            <div class="product-price-block"><span class="old-price">₴800</span><span class="new-price">₴640</span></div>
+                            <button class="btn-add-to-cart">У кошик</button>
+                        </div>
 
+                        <div class="product-card" data-id="5" data-sku="ART-005" data-price="1620">
+                            <span class="discount-badge">-10%</span>
+                            <img src="https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=400&auto=format&fit=crop&q=60" alt="Павербанк" class="product-image">
+                            <div class="product-title" title="Павербанк Fast Charge 20000mAh">Павербанк Fast Charge 20000mAh</div>
+                            <div class="product-description"><strong>Характеристики:</strong> Quick Charge 65W.<br><strong>Матеріал:</strong> Алюміній.</div>
+                            <div class="product-rating">★★★★★ <span>(4.8)</span></div>
+                            <div class="product-price-block"><span class="old-price">₴1 800</span><span class="new-price">₴1 620</span></div>
+                            <button class="btn-add-to-cart">У кошик</button>
+                        </div>
+
+                        <div class="product-card" data-id="6" data-sku="ART-006" data-price="2378">
+                            <span class="discount-badge">-18%</span>
+                            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=60" alt="Кросівки" class="product-image">
+                            <div class="product-title" title="Кросівки Urban Speed Runner">Кросівки Urban Speed Runner</div>
+                            <div class="product-description"><strong>Характеристики:</strong> Амортизація.<br><strong>Матеріал:</strong> Текстиль, гума.</div>
+                            <div class="product-rating">★★★★☆ <span>(4.6)</span></div>
+                            <div class="product-price-block"><span class="old-price">₴2 900</span><span class="new-price">₴2 378</span></div>
+                            <button class="btn-add-to-cart">У кошик</button>
+                        </div>
+
+                    </div>
+                    <button class="slider-btn next" onclick="scrollSlider('salesSlider', 300)">&gt;</button>
                 </div>
             </section>
 
-            <!-- Секція 2: New Products -->
+            <!-- Секція 2: Нові надходження (Слайдер БЕЗ знижок) -->
             <section class="products-section">
                 <h2>Нові надходження (New Products)</h2>
+                <div class="slider-wrapper">
+                    <button class="slider-btn prev" onclick="scrollSlider('newSlider', -300)">&lt;</button>
+                    <div class="slider-container" id="newSlider">
+                        
+                        <div class="product-card" data-id="7" data-sku="ART-007" data-price="1500">
+                            <img src="https://images.unsplash.com/photo-1598331668826-20cecc596b86?w=400&auto=format&fit=crop&q=60" alt="Смарт-колонка" class="product-image">
+                            <div class="product-title" title="Bluetooth колонка SoundBass 360 Mini">Bluetooth колонка SoundBass 360 Mini</div>
+                            <div class="product-description"><strong>Характеристики:</strong> 20W, IPX7.<br><strong>Матеріал:</strong> Пластик, тканина.</div>
+                            <div class="product-rating">★★★★★ <span>(4.9)</span></div>
+                            <div class="product-price-block"><span class="new-price">₴1 500</span></div>
+                            <button class="btn-add-to-cart">У кошик</button>
+                        </div>
+
+                        <div class="product-card" data-id="8" data-sku="ART-008" data-price="3200">
+                            <img src="https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=400&auto=format&fit=crop&q=60" alt="Куртка" class="product-image">
+                            <div class="product-title" title="Куртка Outdoor Waterproof Jacket">Куртка Outdoor Waterproof Jacket</div>
+                            <div class="product-description"><strong>Характеристики:</strong> Мембрана 10000мм.<br><strong>Матеріал:</strong> Нейлон.</div>
+                            <div class="product-rating">★★★★☆ <span>(4.4)</span></div>
+                            <div class="product-price-block"><span class="new-price">₴3 200</span></div>
+                            <button class="btn-add-to-cart">У кошик</button>
+                        </div>
+
+                        <div class="product-card" data-id="9" data-sku="ART-009" data-price="1250">
+                            <img src="https://images.unsplash.com/photo-1628413993904-94ecb60f1239?w=400&auto=format&fit=crop&q=60" alt="Ігрова миша" class="product-image">
+                            <div class="product-title" title="Бездротова ігрова миша CyberMouse Pro">Бездротова ігрова миша CyberMouse Pro</div>
+                            <div class="product-description"><strong>Характеристики:</strong> 16000 DPI, RGB.<br><strong>Матеріал:</strong> Матовий пластик.</div>
+                            <div class="product-rating">★★★★★ <span>(4.9)</span></div>
+                            <div class="product-price-block"><span class="new-price">₴1 250</span></div>
+                            <button class="btn-add-to-cart">У кошик</button>
+                        </div>
+
+                        <div class="product-card" data-id="10" data-sku="ART-010" data-price="2100">
+                            <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&auto=format&fit=crop&q=60" alt="Рюкзак" class="product-image">
+                            <div class="product-title" title="Міський рюкзак Urban Tech Pack">Міський рюкзак Urban Tech Pack</div>
+                            <div class="product-description"><strong>Характеристики:</strong> Відділ для ноутбука 15.6".<br><strong>Матеріал:</strong> Оксфорд.</div>
+                            <div class="product-rating">★★★★☆ <span>(4.7)</span></div>
+                            <div class="product-price-block"><span class="new-price">₴2 100</span></div>
+                            <button class="btn-add-to-cart">У кошик</button>
+                        </div>
+
+                        <div class="product-card" data-id="11" data-sku="ART-011" data-price="2800">
+                            <img src="https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400&auto=format&fit=crop&q=60" alt="Клавіатура" class="product-image">
+                            <div class="product-title" title="Механічна клавіатура RGB Mechanical">Механічна клавіатура RGB Mechanical</div>
+                            <div class="product-description"><strong>Характеристики:</strong> Red Switches, RGB.<br><strong>Матеріал:</strong> Алюміній, ABS.</div>
+                            <div class="product-rating">★★★★★ <span>(5.0)</span></div>
+                            <div class="product-price-block"><span class="new-price">₴2 800</span></div>
+                            <button class="btn-add-to-cart">У кошик</button>
+                        </div>
+
+                    </div>
+                    <button class="slider-btn next" onclick="scrollSlider('newSlider', 300)">&gt;</button>
+                </div>
+            </section>
+
+            <!-- Секція 3: Усі товари (Сітка БЕЗ знижок) -->
+            <section class="products-section">
+                <h2>Каталог товарів</h2>
                 <div class="products-grid">
                     
-                    <div class="product-card" data-id="5" data-sku="ART-005" data-price="1620">
-                        <span class="discount-badge">-10%</span>
-                        <img src="https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=400&auto=format&fit=crop&q=60" alt="Павербанк" class="product-image">
-                        <div class="product-title" title="Зовнішній акумулятор PowerBank Fast Charge 20000mAh">Зовнішній акумулятор PowerBank Fast Charge 20000mAh</div>
-                        <div class="product-description"><strong>Характеристики:</strong> Quick Charge 65W.<br><strong>Матеріал:</strong> Алюміній.</div>
-                        <div class="product-rating">★★★★★ <span>(4.8)</span></div>
-                        <div class="product-price-block"><span class="old-price">₴1 800</span><span class="new-price">₴1 620</span></div>
-                        <button class="btn-add-to-cart">У кошик</button>
-                    </div>
-
-                    <div class="product-card" data-id="6" data-sku="ART-006" data-price="2378">
-                        <span class="discount-badge">-18%</span>
-                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop&q=60" alt="Кросівки" class="product-image">
-                        <div class="product-title" title="Кросівки спортивні Urban Speed Runner Blue">Кросівки спортивні Urban Speed Runner Blue</div>
-                        <div class="product-description"><strong>Характеристики:</strong> Амортизація.<br><strong>Матеріал:</strong> Текстиль, гума.</div>
+                    <div class="product-card" data-id="12" data-sku="ART-012" data-price="1850">
+                        <img src="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=400&auto=format&fit=crop&q=60" alt="Окуляри" class="product-image">
+                        <div class="product-title" title="Сонцезахисні окуляри Polarized Classic">Сонцезахисні окуляри Polarized Classic</div>
+                        <div class="product-description"><strong>Характеристики:</strong> Захист UV400.<br><strong>Матеріал:</strong> Ацетат, метал.</div>
                         <div class="product-rating">★★★★☆ <span>(4.6)</span></div>
-                        <div class="product-price-block"><span class="old-price">₴2 900</span><span class="new-price">₴2 378</span></div>
+                        <div class="product-price-block"><span class="new-price">₴1 850</span></div>
                         <button class="btn-add-to-cart">У кошик</button>
                     </div>
 
-                    <div class="product-card" data-id="7" data-sku="ART-007" data-price="1425">
-                        <span class="discount-badge">-5%</span>
-                        <img src="https://images.unsplash.com/photo-1598331668826-20cecc596b86?w=400&auto=format&fit=crop&q=60" alt="Смарт-колонка" class="product-image">
-                        <div class="product-title" title="Портативна Bluetooth колонка SoundBass 360 Mini">Портативна Bluetooth колонка SoundBass 360 Mini</div>
-                        <div class="product-description"><strong>Характеристики:</strong> 20W, IPX7.<br><strong>Матеріал:</strong> Пластик, тканина.</div>
+                    <div class="product-card" data-id="13" data-sku="ART-013" data-price="890">
+                        <img src="https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400&auto=format&fit=crop&q=60" alt="Кепка" class="product-image">
+                        <div class="product-title" title="Спортивна бейсболка Blue Street Cap">Спортивна бейсболка Blue Street Cap</div>
+                        <div class="product-description"><strong>Характеристики:</strong> Регульований розмір.<br><strong>Матеріал:</strong> 100% бавовна.</div>
+                        <div class="product-rating">★★★★☆ <span>(4.3)</span></div>
+                        <div class="product-price-block"><span class="new-price">₴890</span></div>
+                        <button class="btn-add-to-cart">У кошик</button>
+                    </div>
+
+                    <div class="product-card" data-id="14" data-sku="ART-014" data-price="3800">
+                        <img src="https://images.unsplash.com/photo-1544816155-12df9643f363?w=400&auto=format&fit=crop&q=60" alt="Сумка" class="product-image">
+                        <div class="product-title" title="Шкіряна сумка через плече Leather Bag">Шкіряна сумка через плече Leather Bag</div>
+                        <div class="product-description"><strong>Характеристики:</strong> Натуральна шкіра.<br><strong>Матеріал:</strong> 100% шкіра.</div>
                         <div class="product-rating">★★★★★ <span>(4.9)</span></div>
-                        <div class="product-price-block"><span class="old-price">₴1 500</span><span class="new-price">₴1 425</span></div>
+                        <div class="product-price-block"><span class="new-price">₴3 800</span></div>
                         <button class="btn-add-to-cart">У кошик</button>
                     </div>
 
-                    <div class="product-card" data-id="8" data-sku="ART-008" data-price="2496">
-                        <span class="discount-badge">-22%</span>
-                        <img src="https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=400&auto=format&fit=crop&q=60" alt="Куртка" class="product-image">
-                        <div class="product-title" title="Куртка вітрозахисна Outdoor Waterproof Jacket">Куртка вітрозахисна Outdoor Waterproof Jacket</div>
-                        <div class="product-description"><strong>Характеристики:</strong> Мембрана 10000мм.<br><strong>Матеріал:</strong> Нейлон.</div>
-                        <div class="product-rating">★★★★☆ <span>(4.4)</span></div>
-                        <div class="product-price-block"><span class="old-price">₴3 200</span><span class="new-price">₴2 496</span></div>
+                    <div class="product-card" data-id="15" data-sku="ART-015" data-price="2900">
+                        <img src="https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=400&auto=format&fit=crop&q=60" alt="Черевики" class="product-image">
+                        <div class="product-title" title="Трекінгові черевики Outdoor Trail">Трекінгові черевики Outdoor Trail</div>
+                        <div class="product-description"><strong>Характеристики:</strong> Водонепроникні, Vibram.<br><strong>Матеріал:</strong> Замша, гума.</div>
+                        <div class="product-rating">★★★★★ <span>(4.8)</span></div>
+                        <div class="product-price-block"><span class="new-price">₴2 900</span></div>
                         <button class="btn-add-to-cart">У кошик</button>
                     </div>
 
@@ -761,6 +902,14 @@
 
     <!-- Скрипт логіки -->
     <script>
+        // Функція для прокрутки слайдерів
+        function scrollSlider(sliderId, distance) {
+            const slider = document.getElementById(sliderId);
+            if (slider) {
+                slider.scrollBy({ left: distance, behavior: 'smooth' });
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             let cart = [];
 
